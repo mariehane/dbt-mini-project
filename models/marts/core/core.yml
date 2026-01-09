@@ -10,8 +10,9 @@ models:
           - unique
           - not_null
           - relationships:
-              to: ref('stg_tpch_orders')
-              field: order_key
+              arguments:
+                to: ref('stg_tpch_orders')
+                column_name: order_key
               config:
                 severity: warn
       - name: customer_key
@@ -22,7 +23,8 @@ models:
         description: status of the order
         tests:
           - accepted_values:
-              values: ['P','O','F']
+              arguments:
+                values: ['P','O','F']
       - name: priority_code
         description: code associated with the order
       - name: clerk_name
