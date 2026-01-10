@@ -21,7 +21,8 @@ final as (
         orders.order_date,
         orders.customer_key,
         orders.status_code,
-        orders.priority_code,
+        split_part(orders.priority_code, '-', 1) as priority_code,
+        split_part(orders.priority_code, '-', 2) as priority_str,
         orders.clerk_name,
         orders.ship_priority,
 
