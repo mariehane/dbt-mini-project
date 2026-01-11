@@ -1,15 +1,28 @@
-Welcome to your new dbt project!
+# DBT Mini-Project
+A mini-project showcasing DBT + Snowflake for ELT on MIMIC-IV.
 
-### Using the starter project
+## Usage
+* `dbt build` -> build and test the data in Snowflake.
+* `dbt docs generate`/`dbt docs serve` -> build and view the documentation.
 
-Try running the following commands:
-- dbt run
-- dbt test
-
-
-### Resources:
-- Learn more about dbt [in the docs](https://docs.getdbt.com/docs/introduction)
-- Check out [Discourse](https://discourse.getdbt.com/) for commonly asked questions and answers
-- Join the [dbt community](https://getdbt.com/community) to learn from other analytics engineers
-- Find [dbt events](https://events.getdbt.com) near you
-- Check out [the blog](https://blog.getdbt.com/) for the latest news on dbt's development and best practices
+## Structure
+```
+dbt_mini_project/
+├── models/
+│   ├── intermediate/          # Intermediate transformations
+│   │   ├── int_antibiotics.sql
+│   │   ├── int_hourly_events.sql
+│   │   └── int_hourly_events_by_level2.sql
+│   └── staging/
+│       └── mimiciv/
+│           ├── core/          # Patient database staging (3 models)
+│           ├── hosp/          # Hospital data staging (15 models)
+│           └── icu/           # ICU data staging (7 models)
+├── seeds/                     # Static CSV data files
+│   ├── item_map_chartevents.csv
+│   ├── item_map_dascena_epic.csv
+│   └── item_map_epic.csv
+├── dbt_project.yml            # Main dbt configuration
+├── packages.yml               # dbt package dependencies
+└── README.md
+```
