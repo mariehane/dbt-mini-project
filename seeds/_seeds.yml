@@ -1,0 +1,41 @@
+version: 2
+
+seeds:
+  - name: item_map_chartevents
+    description: Maps itemids to standardized labels for chart events
+    config:
+      column_types:
+        itemid: varchar
+        origin: varchar
+        label: varchar
+        level1: varchar
+        level2: varchar
+        mean: float
+        stdev: float
+        missing_percent: float
+
+  - name: item_map_epic
+    description: Maps itemids for Epic-compatible features  
+    config:
+      column_types:
+        itemid: varchar
+        origin: varchar
+        label: varchar
+        level1: varchar
+        level2: varchar
+        notes: varchar
+        notes_2: varchar
+        icd_version: float
+
+  - name: item_map_dascena_epic
+    description: Maps itemids for Dascena/Epic features
+    config:
+      column_types:
+        itemid: varchar
+        origin: varchar
+        label: varchar
+        level1: varchar
+        level2: varchar
+        notes: varchar
+        notes_2: varchar
+        icd_version: float
