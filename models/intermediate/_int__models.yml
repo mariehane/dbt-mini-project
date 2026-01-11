@@ -1,0 +1,122 @@
+version: 2
+
+models:
+  - name: int_antibiotics
+    description: >
+      Filters prescriptions for sepsis-relevant antibiotics based on the Sepsis-3 criteria.
+      Based on Alistair Johnson and Tom Pollard's sepsis3-mimic SQL script.
+      
+      Excludes:
+      - Routes via eye, ear, or topical administration (ou, os, od, au, as, ad, tp)
+      - Null drug names
+      - Null hospital admission IDs
+    columns:
+      - name: subject_id
+        description: Unique identifier for the patient
+      - name: hadm_id
+        description: Unique identifier for the hospital admission
+      - name: charttime
+        description: Timestamp of the prescription start time
+      - name: drug
+        description: Name of the antibiotic drug (lowercase)
+
+  - name: int_hourly_events
+    description: >
+      Hourly aggregation of all clinical events from multiple sources in LONG format.
+      
+      Sources included:
+      - chartevents (vital signs, observations) - value_mean only
+      - labevents (laboratory results) - value_mean only
+      - inputevents (fluid/medication inputs) - value_mean for rate, value_sum for amount
+      - outputevents (output measurements) - value_sum only
+      - procedureevents (ICU procedures) - value_sum only
+      - prescriptions (medication prescriptions by GSN code) - binary flag in value_mean
+      - antibiotics (sepsis-relevant antibiotic prescriptions) - binary flag in value_mean
+      - microbiologyevents (microbiology samples) - binary flag in value_mean
+      
+      Hour is calculated as dense rank of charttime within each hadm_id,
+      representing hours with data only (no gap-filling for missing hours).
+      
+      This is a general-purpose intermediate model designed to be filtered
+      and pivoted by downstream mart models.
+    columns:
+      - name: hadm_id
+        description: Unique identifier for the hospital admission
+      - name: charttime
+        description: Hour bucket timestamp (truncated to hour)
+      - name: hour
+        description: >
+          Hour number within the admission (1, 2, 3...).
+          Calculated as dense rank of charttime, so only hours with data are numbered.
+      - name: source
+        description: >
+          Event source table: chartevents, labevents, inputevents, outputevents,
+          procedureevents, prescriptions, antibiotics, or microbiology
+      - name: itemid
+        description: >
+          Item identifier. For most sources this is the numeric itemid cast to varchar.
+          For prescriptions it's the GSN code (zero-padded to 6 digits).
+          Special synthetic itemids: 'antibiotics', 'microbio_sample'
+      - name: value_mean
+        description: >
+          Hourly mean of the values. Used for:
+          - Vital signs and lab values (actual mean)
+          - Input rates (mean rate during the hour)
+          - Binary flags (1.0 if present, useful for presence indicators)
+      - name: value_sum
+        description: >
+          Hourly sum of the values. Used for:
+          - Input amounts (total amount during the hour)
+          - Output values (total output during the hour)
+          - Procedure values (total procedure value)
+          NULL for sources that don't use summing.
+      - name: record_count
+        description: Number of source records aggregated into this hourly bucket
+
+  - name: int_hourly_events_by_level2
+    description: >
+      Hourly events aggregated by LEVEL2 concept from item_map seeds.
+      
+      Joins int_hourly_events with all item_map seeds (item_map_chartevents,
+      item_map_epic, item_map_dascena_epic) and aggregates by LEVEL2, which is
+      the standardized concept name (e.g., 'heart_rate', 'creatinine').
+      
+      Multiple itemids that map to the same LEVEL2 are combined:
+      - value_mean: AVG of the hourly means
+      - value_sum: SUM of the hourly sums
+      
+      Only includes itemids that appear in at least one item_map seed,
+      plus the special synthetic itemids ('antibiotics', 'microbio_sample').
+      
+      Excludes static features and diagnosis codes (origin = 'static' or 'diagnoses_icd').
+      
+      Output is in LONG format, designed to be pivoted by downstream mart models.
+    columns:
+      - name: hadm_id
+        description: Unique identifier for the hospital admission
+      - name: charttime
+        description: Hour bucket timestamp (truncated to hour)
+      - name: hour
+        description: >
+          Hour number within the admission (1, 2, 3...).
+          Same as int_hourly_events.
+      - name: source
+        description: >
+          Event source table: chartevents, labevents, inputevents, outputevents,
+          procedureevents, prescriptions, antibiotics, or microbiology
+      - name: level2
+        description: >
+          Standardized concept name from the LEVEL2 column of item_map seeds.
+          Examples: heart_rate, creatinine, temperature, oxygen_saturation.
+          Special values: antibiotics, microbio_sample
+      - name: value_mean
+        description: >
+          Average of the hourly means for all itemids mapping to this LEVEL2.
+          For example, if heart_rate has itemids 211 and 220045, this is the
+          average of their individual hourly means.
+      - name: value_sum
+        description: >
+          Sum of the hourly sums for all itemids mapping to this LEVEL2.
+          NULL for sources that don't use summing.
+      - name: record_count
+        description: Total record count across all itemids mapping to this LEVEL2

@@ -1,0 +1,274 @@
+version: 2
+
+models:
+  - name: stg_hosp__diagnoses_icd
+    description: Staged ICD diagnosis codes
+    columns:
+      - name: subject_id
+        description: Patient identifier
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_core__patients')
+                field: subject_id
+      - name: hadm_id
+        description: Hospital admission identifier
+        tests:
+          - not_null
+      - name: seq_num
+        description: Diagnosis sequence number
+      - name: icd_code
+        description: ICD diagnosis code
+      - name: icd_version
+        description: ICD version (9 or 10)
+
+  - name: stg_hosp__procedures_icd
+    description: Staged ICD procedure codes
+    columns:
+      - name: subject_id
+        description: Patient identifier
+        tests:
+          - not_null
+      - name: hadm_id
+        description: Hospital admission identifier
+        tests:
+          - not_null
+      - name: chartdate
+        description: Procedure date
+      - name: icd_code
+        description: ICD procedure code
+      - name: icd_version
+        description: ICD version (9 or 10)
+
+  - name: stg_hosp__drgcodes
+    description: Staged DRG codes and severity
+    columns:
+      - name: subject_id
+        description: Patient identifier
+        tests:
+          - not_null
+      - name: hadm_id
+        description: Hospital admission identifier
+        tests:
+          - not_null
+      - name: drg_type
+        description: DRG type classification
+      - name: drg_code
+        description: DRG code
+      - name: description
+        description: DRG description
+
+  - name: stg_hosp__labevents
+    description: Staged laboratory test results
+    columns:
+      - name: labevent_id
+        description: Unique lab event identifier
+        tests:
+          - not_null
+          - unique
+      - name: subject_id
+        description: Patient identifier
+        tests:
+          - not_null
+      - name: hadm_id
+        description: Hospital admission identifier
+      - name: itemid
+        description: Lab item identifier
+        tests:
+          - not_null
+      - name: charttime
+        description: Lab result time
+      - name: value
+        description: Lab result value
+      - name: valuenum
+        description: Numeric lab result
+
+  - name: stg_hosp__prescriptions
+    description: Staged medication prescriptions
+    columns:
+      - name: subject_id
+        description: Patient identifier
+        tests:
+          - not_null
+      - name: hadm_id
+        description: Hospital admission identifier
+        tests:
+          - not_null
+      - name: pharmacy_id
+        description: Pharmacy record identifier
+      - name: drug
+        description: Drug name
+      - name: route
+        description: Administration route
+
+  - name: stg_hosp__pharmacy
+    description: Staged pharmacy records
+    columns:
+      - name: subject_id
+        description: Patient identifier
+        tests:
+          - not_null
+      - name: hadm_id
+        description: Hospital admission identifier
+      - name: pharmacy_id
+        description: Pharmacy record identifier
+      - name: medication
+        description: Medication name
+
+  - name: stg_hosp__emar
+    description: Staged medication administration records
+    columns:
+      - name: subject_id
+        description: Patient identifier
+        tests:
+          - not_null
+      - name: emar_id
+        description: EMAR identifier
+        tests:
+          - not_null
+      - name: charttime
+        description: Administration time
+      - name: medication
+        description: Medication administered
+
+  - name: stg_hosp__emar_detail
+    description: Staged detailed medication administration
+    columns:
+      - name: subject_id
+        description: Patient identifier
+        tests:
+          - not_null
+      - name: emar_id
+        description: EMAR identifier
+        tests:
+          - not_null
+
+  - name: stg_hosp__poe
+    description: Staged provider order entry
+    columns:
+      - name: poe_id
+        description: Order identifier
+        tests:
+          - not_null
+      - name: subject_id
+        description: Patient identifier
+        tests:
+          - not_null
+      - name: hadm_id
+        description: Hospital admission identifier
+      - name: order_type
+        description: Type of order
+
+  - name: stg_hosp__poe_detail
+    description: Staged provider order details
+    columns:
+      - name: poe_id
+        description: Order identifier
+        tests:
+          - not_null
+      - name: subject_id
+        description: Patient identifier
+        tests:
+          - not_null
+
+  - name: stg_hosp__microbiologyevents
+    description: Staged microbiology culture results
+    columns:
+      - name: microevent_id
+        description: Microbiology event identifier
+        tests:
+          - not_null
+          - unique
+      - name: subject_id
+        description: Patient identifier
+        tests:
+          - not_null
+      - name: org_name
+        description: Organism name
+      - name: ab_name
+        description: Antibiotic name
+
+  - name: stg_hosp__hcpcsevents
+    description: Staged HCPCS procedure events
+    columns:
+      - name: subject_id
+        description: Patient identifier
+        tests:
+          - not_null
+      - name: hadm_id
+        description: Hospital admission identifier
+      - name: hcpcs_cd
+        description: HCPCS code
+
+  - name: stg_hosp__services
+    description: Staged hospital service assignments
+    columns:
+      - name: subject_id
+        description: Patient identifier
+        tests:
+          - not_null
+      - name: hadm_id
+        description: Hospital admission identifier
+      - name: prev_service
+        description: Previous service
+      - name: curr_service
+        description: Current service
+
+  - name: stg_hosp__codes
+    description: Staged code lookup table
+    columns:
+      - name: id
+        description: Code identifier
+      - name: code
+        description: Code value
+
+  - name: stg_hosp__d_hcpcs
+    description: Staged HCPCS code dictionary
+    columns:
+      - name: code
+        description: HCPCS code
+        tests:
+          - not_null
+          - unique
+      - name: category
+        description: Code category
+      - name: long_description
+        description: Full code description
+
+  - name: stg_hosp__d_icd_diagnoses
+    description: Staged ICD diagnosis dictionary
+    columns:
+      - name: icd_code
+        description: ICD diagnosis code
+        tests:
+          - not_null
+      - name: icd_version
+        description: ICD version
+      - name: long_title
+        description: Full diagnosis description
+
+  - name: stg_hosp__d_icd_procedures
+    description: Staged ICD procedure dictionary
+    columns:
+      - name: icd_code
+        description: ICD procedure code
+        tests:
+          - not_null
+      - name: icd_version
+        description: ICD version
+      - name: long_title
+        description: Full procedure description
+
+  - name: stg_hosp__d_labitems
+    description: Staged lab item dictionary
+    columns:
+      - name: itemid
+        description: Lab item identifier
+        tests:
+          - not_null
+          - unique
+      - name: label
+        description: Lab item label
+      - name: category
+        description: Lab category

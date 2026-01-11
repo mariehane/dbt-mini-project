@@ -1,0 +1,99 @@
+version: 2
+
+models:
+  - name: stg_core__patients
+    description: Staged patient demographics and anchor information
+    columns:
+      - name: subject_id
+        description: Unique patient identifier
+        tests:
+          - not_null
+          - unique
+      - name: gender
+        description: Patient gender
+      - name: anchor_age
+        description: Patient age at anchor year
+      - name: anchor_year
+        description: Deidentified year for patient
+      - name: anchor_year_group
+        description: Grouped year range
+      - name: dod
+        description: Date of death if applicable
+      - name: _loaded_at
+        description: Timestamp when record was loaded
+
+  - name: stg_core__admissions
+    description: Staged hospital admission records
+    columns:
+      - name: hadm_id
+        description: Unique hospital admission identifier
+        tests:
+          - not_null
+          - unique
+      - name: subject_id
+        description: Patient identifier
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_core__patients')
+                field: subject_id
+      - name: admittime
+        description: Admission timestamp
+      - name: dischtime
+        description: Discharge timestamp
+      - name: deathtime
+        description: Death timestamp if occurred
+      - name: admission_type
+        description: Type of admission
+      - name: admission_location
+        description: Where patient was admitted from
+      - name: discharge_location
+        description: Where patient was discharged to
+      - name: insurance
+        description: Insurance type
+      - name: language
+        description: Primary language
+      - name: marital_status
+        description: Marital status
+      - name: ethnicity
+        description: Patient ethnicity
+      - name: edregtime
+        description: ED registration time
+      - name: edouttime
+        description: ED departure time
+      - name: hospital_expire_flag
+        description: Whether patient died in hospital
+      - name: _loaded_at
+        description: Timestamp when record was loaded
+
+  - name: stg_core__transfers
+    description: Staged patient transfer events
+    columns:
+      - name: transfer_id
+        description: Unique transfer event identifier
+        tests:
+          - not_null
+          - unique
+      - name: subject_id
+        description: Patient identifier
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_core__patients')
+                field: subject_id
+              config:
+                where: "subject_id is not null"
+      - name: hadm_id
+        description: Hospital admission identifier
+      - name: eventtype
+        description: Type of transfer event
+      - name: careunit
+        description: Care unit location
+      - name: intime
+        description: Transfer in timestamp
+      - name: outtime
+        description: Transfer out timestamp
+      - name: _loaded_at
+        description: Timestamp when record was loaded
