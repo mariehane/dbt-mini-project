@@ -1,4 +1,4 @@
-itemid,origin,label,LEVEL1,LEVEL2,mean,stdev,missing percent
+itemid,origin,label,level1,level2,mean,stdev,missing_percent
 769,chartevents,alt,alanine aminotransferase,alanine aminotransferase,335.136549,984.8940386,99.33356172
 220644,chartevents,alt,alanine aminotransferase,alanine aminotransferase,281.0920128,907.0054864,99.33387976
 772,chartevents,albumin (>3.2),albumin,albumin,2.923178992,0.631902485,99.51034869

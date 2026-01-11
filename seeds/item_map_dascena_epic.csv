@@ -1,4 +1,4 @@
-itemid,origin,label,LEVEL1,LEVEL2,Notes,Notes 2,icd_version
+itemid,origin,label,level1,level2,notes,notes_2,icd_version
 42,diagnoses_icd,ICD-9,Human immunodeficiency virus [HIV] disease,HIV,Did not include Type-2,,9.0
 51,chartevents,arterial bp [systolic],systolic blood pressure (arterial),systolic blood pressure,Not present,,
 211,chartevents,heart rate,heart rate,heart rate,,,

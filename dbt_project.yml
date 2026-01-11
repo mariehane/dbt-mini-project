@@ -21,6 +21,9 @@ models:
     staging:
       +materialized: view
       +snowflake_warehouse: pc_dbt_wh
+    intermediate:
+      +materialized: table
+      +snowflake_warehouse: pc_dbt_wh_large
     marts:
       +materialized: table
       +snowflake_warehouse: pc_dbt_wh_large
