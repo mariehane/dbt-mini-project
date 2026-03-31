@@ -2,7 +2,7 @@ name: 'dbt_mini_project'
 version: '1.0.0'
 config-version: 2
 
-profile: 'default'
+profile: dbt_mini_project_profile
 
 model-paths: ["models"]
 analysis-paths: ["analyses"]
@@ -29,4 +29,4 @@ models:
       +snowflake_warehouse: pc_dbt_wh_large
 
 dbt-cloud:
-    project-id: 70471823540055
+    project-id: 70471823569993
