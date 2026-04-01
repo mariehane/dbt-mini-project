@@ -2,7 +2,7 @@ name: 'dbt_mini_project'
 version: '1.0.0'
 config-version: 2
 
-profile: 'default'
+profile: dbt_mini_project_profile
 
 model-paths: ["models"]
 analysis-paths: ["analyses"]
@@ -20,13 +20,13 @@ models:
   dbt_mini_project:
     staging:
       +materialized: view
-      +snowflake_warehouse: pc_dbt_wh
+      +snowflake_warehouse: compute_wh
     intermediate:
       +materialized: table
-      +snowflake_warehouse: pc_dbt_wh_large
+      +snowflake_warehouse: compute_wh
     marts:
       +materialized: table
-      +snowflake_warehouse: pc_dbt_wh_large
+      +snowflake_warehouse: compute_wh
 
 dbt-cloud:
-    project-id: 70471823540055
+    project-id: 70471823569993
