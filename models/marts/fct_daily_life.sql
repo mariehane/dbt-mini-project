@@ -6,7 +6,7 @@ WITH spine AS (
 
 sleep AS (
     SELECT * FROM {{ ref('int_sleep_metrics') }}
-)--,
+),
 {#
 --
 --nutrition AS (
@@ -21,15 +21,17 @@ sleep AS (
 --    SELECT * FROM {{ ref('stg_weather_daily') }}
 --),
 
---screen AS (
---    SELECT
---        date,
---        SUM(duration_min)   AS total_screen_time_min,
---        SUM(pickups)        AS total_pickups,
---        SUM(notifications)  AS total_notifications
---    FROM {{ ref('stg_screen_time') }}
---    GROUP BY 1
---),
+#}
+screen AS (
+    SELECT
+        screen_date AS date_day,
+        SUM(total_screen_time_minutes) AS total_screen_time_min,
+        SUM(total_pickups) AS total_pickups,
+        SUM(total_notifications) AS total_notifications,
+        MIN(first_pickup_time) AS first_pickup_time
+    FROM {{ ref('int_screen_time_summary') }}
+    GROUP BY 1
+){#,
 --
 --home_temp AS (
 --    SELECT
@@ -53,9 +55,10 @@ SELECT
     sl.avg_sleeping_hr,
 
     -- 📱 Screen Time
-    --sc.total_screen_time_min,
-    --sc.total_pickups,
-    --sc.total_notifications,
+    sc.total_screen_time_min,
+    sc.total_pickups,
+    sc.total_notifications,
+    sc.first_pickup_time--,
 
     -- 🌡️ Home Environment
     --ht.avg_bedroom_temp_c,
@@ -86,7 +89,7 @@ SELECT
 
 FROM      spine       s
 LEFT JOIN sleep       sl ON s.date_day = sl.sleep_date
---LEFT JOIN screen      sc ON s.date_day = sc.date
+LEFT JOIN screen      sc ON s.date_day = sc.date_day
 --LEFT JOIN home_temp   ht ON s.date_day = ht.recorded_date
 --LEFT JOIN weather     w  ON s.date_day = w.date
 --LEFT JOIN nutrition   n  ON s.date_day = n.date

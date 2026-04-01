@@ -13,6 +13,7 @@ sources:
             warn_after: { count: 36, period: hour }
             error_after: { count: 72, period: hour }
       - name: apple_screen_time
+        description: Daily Apple Screen Time export (JSON VARIANT with summary and array metrics)
       - name: home_temperature
       - name: weather_daily
       - name: nutrition_log
